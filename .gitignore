@@ -1,0 +1,48 @@
+# Node modules
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# dotenv environment files
+.env
+.env.*.local
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Debug
+.idea/
+.vscode/
+*.swp
+
+# Build output
+dist/
+build/
+coverage/
+
+# Uploaded files (optional - only if uploads are temporary or ignored in prod)
+# If you want to **keep uploaded PDFs**, DO NOT ignore this:
+# uploads/
+
+# Optional: Ignore test output
+test-output/
+
+# Optional: Ignore local database dump files
+dump/
+*.sqlite
+
+# Optional: Ignore any sensitive config overrides
+config/local.js
