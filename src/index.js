@@ -26,6 +26,10 @@ const __dirname = dirname(__filename);
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+app.get("/", (req, res) => {
+  res.send("✅ Veramed Health API is running.");
+});
+
 app.use('/api/v1/veramed', contactRoutes);
 app.use('/api/v1/veramed', collaborationRoutes);
 app.use('/api/v1/veramed', servicesRotes);
