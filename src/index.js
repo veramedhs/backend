@@ -17,6 +17,7 @@ import authRoutes from './routes/dashboard_routes/auth.routes.js';
 import servicesRotes from "./routes/veramed_routes/services.route.js"
 import consultationRoute from "./routes/veramed_routes/consultation.route.js"
 import reviewRoutes from "./routes/veramed_routes/review.routes.js"
+import galleryRoutes from "./routes/veramed_routes/gallery.routes.js"
 
 
 // Middleware
@@ -38,6 +39,8 @@ app.use('/api/v1/veramed', collaborationRoutes);
 app.use('/api/v1/veramed', servicesRotes);
 app.use('/api/v1/veramed', consultationRoute);
 app.use('/api/v1/veramed', reviewRoutes);
+app.use('/api/v1/veramed', galleryRoutes);
+
 
 
 
