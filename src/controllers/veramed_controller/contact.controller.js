@@ -1,3 +1,4 @@
+// controllers/veramed_controller/contact.controller.js
 import { ENV } from '../../config/ENV.js';
 import Contact from '../../models/veramed_model/contact.model.js';
 
@@ -7,34 +8,38 @@ export const contact = async (req, res) => {
   try {
     if (!fullName || !email || !phone) {
       return res.status(400).json({
-        message: 'All fields are required',
+        message: 'All required fields (Full Name, Email, Phone) must be filled out.',
         success: false,
       });
     }
 
-    console.log('Uploaded file:', req.file);
+    // req.files will be an array of files from multer
+    console.log('Uploaded files:', req.files); 
 
-    const attachment = req.file?.path || null; // ✅ Use .path for CloudinaryStorage
+    // Map over the req.files array to get the path of each file.
+    // If no files are uploaded, req.files will be an empty array.
+    const attachments = req.files ? req.files.map(file => file.path) : [];
 
     const newContact = new Contact({
       fullName,
       email,
       phone,
       message,
-      attachment,
+      // Save the array of file paths
+      attachment: attachments, 
     });
 
     await newContact.save();
 
     res.status(201).json({
-      message: 'Contact submitted successfully',
+      message: 'Contact form submitted successfully!',
       success: true,
       data: newContact,
     });
   } catch (error) {
-    console.error('Contact submission error:', error);
+    console.error('Error during contact form submission:', error);
     res.status(500).json({
-      message: 'Server error. Please try again later.',
+      message: 'A server error occurred. Please try again later.',
       success: false,
     });
   }
@@ -42,21 +47,16 @@ export const contact = async (req, res) => {
 
 export const getAllContactUsData = async (req, res) => {
   try {
-    const data = await Contact.find().sort({ createdAt: -1 });
-
-    if (!data || data.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: 'contact us data is not available',
-      });
-    }
-    res.status(200).json({ success: true, data });
+    const contacts = await Contact.find();
+    res.status(200).json({
+      message: 'Successfully retrieved all contact data.',
+      success: true,
+      data: contacts,
+    });
   } catch (error) {
-    if (ENV.ENVIRONMENT !== 'production') {
-      console.error('Contact fetch error:', error);
-    }
+    console.error('Error retrieving contact data:', error);
     res.status(500).json({
-      message: 'Server error. Please try again later.',
+      message: 'A server error occurred. Please try again later.',
       success: false,
     });
   }

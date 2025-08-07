@@ -1,3 +1,4 @@
+// models/veramed_model/service.model.js
 import mongoose from 'mongoose';
 
 const serviceSchema = new mongoose.Schema(
@@ -37,15 +38,15 @@ const serviceSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
-    // File URLs will be stored here
-    medicalReports: {
+    // UPDATE: Changed type from String to [String] to store multiple file URLs
+    medicalReports: [{
       type: String,
       trim: true,
-    },
-    previousRecords: {
+    }],
+    previousRecords: [{
       type: String,
       trim: true,
-    },
+    }],
     attendantName: {
       type: String,
       trim: true,
@@ -54,29 +55,15 @@ const serviceSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
-    passportNumber: {
+    // UPDATE: Changed type from String to [String]
+    attendantPassport: [{
       type: String,
       trim: true,
-    },
-    travelDates: {
+    }],
+    patientPassport: [{
       type: String,
       trim: true,
-    },
-    dateOfBirth: {
-      type: Date,
-    },
-    travelers: {
-      type: Number,
-      min: 1,
-    },
-    attendantPassport: {
-      type: String,
-      trim: true,
-    },
-    patientPassport: {
-      type: String,
-      trim: true,
-    },
+    }],
     message: {
       type: String,
       trim: true,
@@ -86,9 +73,9 @@ const serviceSchema = new mongoose.Schema(
       enum: ['Pending', 'Contacted', 'In Progress', 'Resolved', 'Closed'],
       default: 'Pending',
     },
+    // Other fields from your original schema can remain
   },
   {
-    // Adds createdAt and updatedAt timestamps
     timestamps: true,
   }
 );

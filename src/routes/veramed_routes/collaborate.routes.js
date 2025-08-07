@@ -7,8 +7,9 @@ import {
 
 const router = express.Router();
 
-// Route to handle contact form with file attachment
-router.post('/collaborate', upload.single('attachment'), collaboration);
+// UPDATE: Use upload.array() to handle multiple files.
+// The field name 'attachments[]' must match what you append in the FormData on the frontend.
+router.post('/collaborate', upload.array('attachments[]'), collaboration);
 
 router.get('/collaborate', getAllCollabrationData);
 

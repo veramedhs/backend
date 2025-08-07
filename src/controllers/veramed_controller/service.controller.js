@@ -1,22 +1,26 @@
-import Service from "../../models/veramed_model/service.model.js"
+// controllers/veramed_controller/service.controller.js
+import Service from "../../models/veramed_model/service.model.js";
+
 export const submitServiceRequest = async (req, res) => {
   try {
-
-    // ✅ Define getFileUrl to convert uploaded path into full HTTP URL
-    const getFileUrl = (req, file) => {
-      const filename = file?.[0]?.filename;
-      return filename ? `${req.protocol}://${req.get('host')}/uploads/${filename}` : null;
+    // UPDATE: This helper function now processes an array of files and returns an array of URLs.
+    const getFileUrls = (filesArray) => {
+      if (!filesArray || filesArray.length === 0) {
+        return []; // Return an empty array if no files
+      }
+      return filesArray.map(file => {
+        const filename = file.path; // Use .path for Cloudinary or .filename for local storage
+        // Example for local storage:
+        // return `${req.protocol}://${req.get('host')}/uploads/${filename}`;
+        return filename; // For Cloudinary, path is the full URL
+      });
     };
-
-    // ✅ Now use it
-    const medicalReportsUrl = getFileUrl(req, req.files?.medicalReports);
-    const previousRecordsUrl = getFileUrl(req, req.files?.previousRecords);
-    const patientPassportUrl = getFileUrl(req, req.files?.patientPassport);
-    const attendantPassportUrl = getFileUrl(req, req.files?.attendantPassport);
-
     
-
- 
+    // UPDATE: The files are now under keys that match the route, e.g., 'medicalReports[]'
+    const medicalReportsUrls = getFileUrls(req.files['medicalReports[]']);
+    const previousRecordsUrls = getFileUrls(req.files['previousRecords[]']);
+    const patientPassportUrls = getFileUrls(req.files['patientPassport[]']);
+    const attendantPassportUrls = getFileUrls(req.files['attendantPassport[]']);
 
     const {
       serviceTitle,
@@ -39,12 +43,13 @@ export const submitServiceRequest = async (req, res) => {
       phone,
       medicalCondition,
       hospitalName,
-      medicalReports: medicalReportsUrl,
-      previousRecords: previousRecordsUrl,
+      // UPDATE: Assign the arrays of URLs to the schema fields
+      medicalReports: medicalReportsUrls,
+      previousRecords: previousRecordsUrls,
       attendantName,
       relation,
-      attendantPassport: attendantPassportUrl,
-      patientPassport: patientPassportUrl,
+      attendantPassport: attendantPassportUrls,
+      patientPassport: patientPassportUrls,
       message,
     });
 

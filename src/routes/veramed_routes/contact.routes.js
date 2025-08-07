@@ -8,10 +8,10 @@ import {
 
 const router = express.Router();
 
-// Route to handle contact form with file attachment
+// Route to handle contact form with multiple file attachments
 router.post(
   '/contact',
-  upload.single('attachment'), // 'attachment' is the field name from frontend
+  upload.array('attachments[]'), 
   contact
 );
 
