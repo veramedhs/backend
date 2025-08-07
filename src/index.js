@@ -16,6 +16,8 @@ import hospitalRoutes from './routes/medical_assistant_routes/hospital.routes.js
 import authRoutes from './routes/dashboard_routes/auth.routes.js';
 import servicesRotes from "./routes/veramed_routes/services.route.js"
 import consultationRoute from "./routes/veramed_routes/consultation.route.js"
+import reviewRoutes from "./routes/veramed_routes/review.routes.js"
+
 
 // Middleware
 app.use(express.json());
@@ -35,6 +37,8 @@ app.use('/api/v1/veramed', contactRoutes);
 app.use('/api/v1/veramed', collaborationRoutes);
 app.use('/api/v1/veramed', servicesRotes);
 app.use('/api/v1/veramed', consultationRoute);
+app.use('/api/v1/veramed', reviewRoutes);
+
 
 
 app.use('/api/v1/medical_assistant', hospitalRoutes);
