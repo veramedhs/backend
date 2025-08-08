@@ -89,7 +89,6 @@ export const addUser = async (req, res) => {
       message: 'Password must be at least 6 characters long',
     });
   }
-
   try {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -110,5 +109,53 @@ export const addUser = async (req, res) => {
       console.error('Add user error:', error);
     }
     res.status(500).json({ success: false, message: 'Failed to add user' });
+  }
+};
+
+// --- GET ALL USERS (Filtered for 'user' role) ---
+// Route: router.get('/users', requireAuth, requireRole(['admin']), getAllUsers);
+export const getAllUsers = async (req, res) => {
+  try {
+    // Find all users where the role is 'user' and exclude the password field.
+    const users = await User.find({ role: 'user' }).select('-password');
+    
+    res.status(200).json({
+      success: true,
+      message: 'Users retrieved successfully',
+      users,
+    });
+  } catch (error) {
+    if (ENV.ENVIRONMENT !== 'production') {
+      console.error('Get all users error:', error);
+    }
+    res.status(500).json({ success: false, message: 'Failed to retrieve users' });
+  }
+};
+
+// --- DELETE USER ---
+// Route: router.delete('/users/:id', requireAuth, requireRole(['admin']), deleteUser);
+export const deleteUser = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    // Optional: Prevent an admin from deleting themselves
+    // if (user._id.toString() === req.user.id) {
+    //   return res.status(400).json({ success: false, message: 'You cannot delete your own account.' });
+    // }
+
+    await User.findByIdAndDelete(id);
+
+    res.status(200).json({ success: true, message: 'User deleted successfully' });
+  } catch (error) {
+    if (ENV.ENVIRONMENT !== 'production') {
+      console.error('Delete user error:', error);
+    }
+    res.status(500).json({ success: false, message: 'Failed to delete user' });
   }
 };

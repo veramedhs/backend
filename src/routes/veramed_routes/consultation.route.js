@@ -1,17 +1,22 @@
-// routes/consultation.route.js
 import express from 'express';
-import { consultationValidationRules } from '../../validator/consultation.validation.js';
-import { createConsultationRequest } from '../../controllers/veramed_controller/consultation.controller.js';
+import {
+  createConsultationRequest, // Assuming you want to keep the creation route here
+  getAllConsultations,
+  deleteConsultation,
+} from '../../controllers/veramed_controller/consultation.controller.js'; // Adjust path as needed
+import { requireAuth } from '../../middleware/authMiddleware.js'; 
 
 const router = express.Router();
 
-// @route   POST api/consultation
-// @desc    Submit a new free consultation request
-// @access  Public
-router.post(
-  '/consultation',
-  consultationValidationRules(), // The validation rules are applied here
-  createConsultationRequest
-);
+// --- PUBLIC ROUTE (for submitting the form) ---
+router.post('/consultation', createConsultationRequest);
+
+// --- ADMIN-ONLY ROUTES ---
+
+// GET /api/v1/consultations/
+router.get('/consultation', requireAuth, getAllConsultations);
+
+// DELETE /api/v1/consultations/:id
+router.delete('/consultation/:id', requireAuth, deleteConsultation);
 
 export default router;

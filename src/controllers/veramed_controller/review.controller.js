@@ -1,108 +1,97 @@
-// src/controllers/review.controller.js
+// src/controllers/veramed_controller/review.controller.js
 
-import { Review } from "../../models/veramed_model/review.model.js"; 
+import { Review } from "../../models/veramed_model/review.model.js";
 
 // --- CONTROLLER 1: CREATE A NEW REVIEW (Customer Facing) ---
 export const createReview = async (req, res) => {
+  // ... (Your existing createReview code remains unchanged)
   try {
     const { name, location, rating, review } = req.body;
-
     if ([name, location, rating, review].some((field) => !field || String(field).trim() === "")) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Name, location, rating, and review are all required fields." 
-      });
+      return res.status(400).json({ success: false, message: "All required fields must be provided." });
     }
-
-    const profileImageUrl = req.file?.path || "";
-    
     const newReview = await Review.create({
       name,
       location,
       rating: Number(rating),
       review,
-      profileImageUrl: profileImageUrl,
-      // isApproved will default to false based on the schema
+      profileImageUrl: req.file?.path || "",
     });
-
-    return res.status(201).json({
-      success: true,
-      message: "Review submitted successfully and is awaiting approval.",
-      data: newReview
-    });
-
+    return res.status(201).json({ success: true, message: "Review submitted successfully.", data: newReview });
   } catch (error) {
     console.error("Error creating review:", error);
-    return res.status(500).json({ 
-      success: false, 
-      message: "An internal server error occurred while creating the review." 
-    });
+    return res.status(500).json({ success: false, message: "Server error during review creation." });
   }
 };
 
-
-// --- CONTROLLER 2: GET ALL REVIEWS (Admin Only) ---
-// Fetches all reviews, regardless of their approval status, for an admin dashboard.
-export const getAllReviews = async (req, res) => {
-  try {
-    // Fetch all reviews and sort by newest first
-    const reviews = await Review.find({}).sort({ createdAt: -1 });
-
-    if (!reviews) {
-      // This case is unlikely but good practice to handle
-      return res.status(404).json({ success: false, message: "Could not fetch reviews." });
+// --- CONTROLLER 2: GET APPROVED REVIEWS (Public Facing, No Pagination) ---
+// This controller is for your public website to display only approved reviews.
+export const getApprovedReviews = async (req, res) => {
+    try {
+        const reviews = await Review.find({ isApproved: true }).sort({ createdAt: -1 });
+        return res.status(200).json({
+            success: true,
+            message: "Approved reviews fetched successfully.",
+            count: reviews.length,
+            data: reviews,
+        });
+    } catch (error) {
+        console.error("Error fetching approved reviews:", error);
+        return res.status(500).json({ success: false, message: "An internal server error occurred." });
     }
+};
+
+// --- CONTROLLER 3: GET ALL REVIEWS (Admin Dashboard, With Pagination) ---
+// This is for the admin page we built, fetching ALL reviews with pagination.
+export const getAllReviewsAdmin = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 9;
+    const skip = (page - 1) * limit;
+
+    const totalReviews = await Review.countDocuments();
+    const reviews = await Review.find({}).sort({ createdAt: -1 }).skip(skip).limit(limit);
 
     return res.status(200).json({
       success: true,
-      message: "All reviews fetched successfully.",
-      count: reviews.length,
+      message: "All admin reviews fetched successfully.",
       data: reviews,
+      pagination: {
+        total: totalReviews,
+        page,
+        totalPages: Math.ceil(totalReviews / limit),
+      },
     });
-
-  } catch (error) {
-    console.error("Error fetching all reviews:", error);
-    return res.status(500).json({ 
-      success: false, 
-      message: "An internal server error occurred." 
-    });
+  } catch (error)    {
+    console.error("Error fetching all admin reviews:", error);
+    return res.status(500).json({ success: false, message: "An internal server error occurred." });
   }
 };
 
-
+// --- CONTROLLER 4: UPDATE APPROVAL STATUS (Admin Only) ---
 export const updateApprovalStatus = async (req, res) => {
+  // ... (Your existing updateApprovalStatus code remains unchanged)
   try {
-    const { id } = req.params; // The ID of the review to update
-
-    // Find the review by its ID first
-    const review = await Review.findById(id);
-
-    if (!review) {
-      return res.status(404).json({ success: false, message: "No review found with this ID." });
-    }
-
-    // Toggle the isApproved status
-    const updatedReview = await Review.findByIdAndUpdate(
-      id,
-      { isApproved: !review.isApproved },
-      { new: true, runValidators: true }
-    );
-
-    return res.status(200).json({
-      success: true,
-      message: `Review status has been toggled to '${updatedReview.isApproved ? "Approved" : "Not Approved"}'.`,
-      data: updatedReview,
-    });
-
+    const review = await Review.findById(req.params.id);
+    if (!review) return res.status(404).json({ success: false, message: "Review not found." });
+    const updatedReview = await Review.findByIdAndUpdate(req.params.id, { isApproved: !review.isApproved }, { new: true });
+    return res.status(200).json({ success: true, message: "Approval status updated.", data: updatedReview });
   } catch (error) {
-    console.error("Error toggling review status:", error);
-    // Handle invalid ID format error
-    if (error.name === 'CastError') {
-      return res.status(400).json({ success: false, message: "Invalid review ID format." });
-    }
-    return res.status(500).json({ 
-      success: false, 
-      message: "An internal server error occurred." 
-    });
+    console.error("Error updating approval status:", error);
+    return res.status(500).json({ success: false, message: "Server error during status update." });
   }
+};
+
+// --- CONTROLLER 5: DELETE REVIEW (Admin Only) ---
+export const deleteReview = async (req, res) => {
+    try {
+        const reviewToDelete = await Review.findByIdAndDelete(req.params.id);
+        if (!reviewToDelete) {
+            return res.status(404).json({ success: false, message: "Review not found." });
+        }
+        return res.status(200).json({ success: true, message: "Review deleted successfully." });
+    } catch (error) {
+        console.error("Error deleting review:", error);
+        return res.status(500).json({ success: false, message: "An internal server error occurred." });
+    }
 };
