@@ -4,19 +4,18 @@ import ContactMessage from '../../models/arahm/contact.model.js';
 // Create a new contact message
 export const sendContactMessage = async (req, res) => {
     try {
-        const { name, phoneNumber, fromCountry, toCountry, serviceNeeded, message } = req.body;
+        const { name, phoneNumber, from, to, serviceNeeded, message } = req.body;
+
+        console.log(name,phoneNumber,from,to,serviceNeeded,message)
 
         // Manual validation (extra layer of protection beyond Mongoose schema)
         if (!name || name.trim().length < 2) {
             return res.status(400).json({ success: false, message: 'Full name must be at least 2 characters.' });
         }
-        if (!phoneNumber || !/^[0-9]{7,15}$/.test(phoneNumber)) {
-            return res.status(400).json({ success: false, message: 'Please provide a valid phone number.' });
-        }
-        if (!fromCountry) {
+        if (!from) {
             return res.status(400).json({ success: false, message: 'From country is required.' });
         }
-        if (!toCountry) {
+        if (!to) {
             return res.status(400).json({ success: false, message: 'To country is required.' });
         }
         if (!message || message.trim().length < 10) {
@@ -27,8 +26,8 @@ export const sendContactMessage = async (req, res) => {
         const newMessage = new ContactMessage({
             name,
             phoneNumber,
-            fromCountry,
-            toCountry,
+            from,
+            to,
             serviceNeeded: serviceNeeded || '',
             message
         });

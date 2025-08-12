@@ -12,24 +12,22 @@ const contactMessageSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  fromCountry: {
+  from: {
     type: String,
     required: true
   },
-  toCountry: {
+  to: {
     type: String,
     required: true
   },
   serviceNeeded: {
     type: String,
-    trim: true,
-    maxlength: 100
+    trim: true
   },
   message: {
     type: String,
     required: true,
-    trim: true,
-    minlength: 10
+    trim: true
   },
   createdAt: {
     type: Date,
