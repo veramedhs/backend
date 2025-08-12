@@ -18,7 +18,9 @@ import servicesRotes from "./routes/veramed_routes/services.route.js"
 import consultationRoute from "./routes/veramed_routes/consultation.route.js"
 import reviewRoutes from "./routes/veramed_routes/review.routes.js"
 import galleryRoutes from "./routes/veramed_routes/gallery.routes.js"
-
+import arahmContactRoutes from "./routes/arahm/contact.routes.js"
+import embassyContactRoutes from "./routes/arahm/embassyContact.route.js"
+import emergencyContactRoutes from "./routes/arahm/EmergencyContact.routes.js"
 
 // Middleware
 app.use(express.json());
@@ -42,10 +44,16 @@ app.use('/api/v1/veramed', reviewRoutes);
 app.use('/api/v1/veramed', galleryRoutes);
 
 
-
-
 app.use('/api/v1/medical_assistant', hospitalRoutes);
+
+
 app.use('/api/v1/dashboard', authRoutes);
+
+app.use('/api/v1/arahm',arahmContactRoutes)
+app.use('/api/v1/arahm',embassyContactRoutes)
+app.use('/api/v1/arahm',emergencyContactRoutes)
+
+
 
 // Connect to MongoDB first, then start server
 const startServer = async () => {
