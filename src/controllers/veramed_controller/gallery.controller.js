@@ -1,3 +1,4 @@
+import { deleteFromCloudinary } from "../../config/cloudinary.js";
 import { Gallery } from "../../models/veramed_model/gallery.model.js";
 
 
@@ -62,3 +63,50 @@ export const getAllGalleryEntries = async (req, res) => {
         });
     }
 }
+
+export const deleteGalleryImages = async (req, res) => {
+  // 1. Get the array of publicIds from the request body.
+  const { publicIds } = req.body;
+
+  // 2. Validate the input.
+  if (!publicIds || !Array.isArray(publicIds) || publicIds.length === 0) {
+    return res.status(400).json({
+      success: false,
+      message: "An array of 'publicIds' is required in the request body.",
+    });
+  }
+
+  try {
+    // 3. Delete the files from Cloudinary first.
+    // If this fails, it will throw an error and we won't touch the database.
+    await deleteFromCloudinary(publicIds);
+
+    // 4. Pull (remove) the image sub-documents from the `images` array
+    // in any gallery document where the publicId matches one in our list.
+    const dbResult = await Gallery.updateMany(
+      { "images.publicId": { $in: publicIds } }, // Find documents containing the images
+      {
+        $pull: {
+          images: { publicId: { $in: publicIds } },
+        },
+      }
+    );
+
+    // Optional: Clean up empty gallery documents after deletion
+    await Gallery.deleteMany({ images: { $size: 0 } });
+
+    // 5. Send a success response.
+    return res.status(200).json({
+      success: true,
+      message: `${publicIds.length} image(s) deleted successfully.`,
+      dbInfo: dbResult,
+    });
+
+  } catch (error) {
+    console.error("Error during gallery image deletion:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "An internal server error occurred.",
+    });
+  }
+};
