@@ -21,6 +21,7 @@ import galleryRoutes from "./routes/veramed_routes/gallery.routes.js"
 import arahmContactRoutes from "./routes/arahm/contact.routes.js"
 import embassyContactRoutes from "./routes/arahm/embassyContact.route.js"
 import emergencyContactRoutes from "./routes/arahm/EmergencyContact.routes.js"
+import blogRoutes from "./routes/dashboard_routes/blogs.routes.js"
 
 // Middleware
 app.use(express.json());
@@ -48,6 +49,9 @@ app.use('/api/v1/medical_assistant', hospitalRoutes);
 
 
 app.use('/api/v1/dashboard', authRoutes);
+app.use('/api/v1/dashboard', blogRoutes);
+
+
 
 app.use('/api/v1/arahm',arahmContactRoutes)
 app.use('/api/v1/arahm',embassyContactRoutes)
