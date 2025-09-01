@@ -23,6 +23,11 @@ import embassyContactRoutes from "./routes/arahm/embassyContact.route.js"
 import emergencyContactRoutes from "./routes/arahm/EmergencyContact.routes.js"
 import blogRoutes from "./routes/dashboard_routes/blogs.routes.js"
 
+import careerRoutes from "./routes/veramed_it_routes/career.routes.js"
+import consultationRoutes from './routes/veramed_it_routes/consultation.routes.js';
+import estimateRoutes from './routes/veramed_it_routes/estimate.routes.js';
+import itContactRoutes from './routes/veramed_it_routes/contact.routes.js';
+
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -53,9 +58,15 @@ app.use('/api/v1/dashboard', blogRoutes);
 
 
 
-app.use('/api/v1/arahm',arahmContactRoutes)
-app.use('/api/v1/arahm',embassyContactRoutes)
-app.use('/api/v1/arahm',emergencyContactRoutes)
+app.use('/api/v1/arahm', arahmContactRoutes)
+app.use('/api/v1/arahm', embassyContactRoutes)
+app.use('/api/v1/arahm', emergencyContactRoutes)
+
+
+app.use('/api/v1/veramed-it', careerRoutes)
+app.use('/api/v1/veramed-it', consultationRoutes)
+app.use('/api/v1/veramed-it', estimateRoutes)
+app.use('/api/v1/veramed-it', itContactRoutes)
 
 
 
