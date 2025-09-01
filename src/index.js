@@ -27,6 +27,7 @@ import careerRoutes from "./routes/veramed_it_routes/career.routes.js"
 import consultationRoutes from './routes/veramed_it_routes/consultation.routes.js';
 import estimateRoutes from './routes/veramed_it_routes/estimate.routes.js';
 import itContactRoutes from './routes/veramed_it_routes/contact.routes.js';
+import ticketRoutes from './routes/veramed_it_routes/ticket.routes.js';
 
 // Middleware
 app.use(express.json());
@@ -67,6 +68,7 @@ app.use('/api/v1/veramed-it', careerRoutes)
 app.use('/api/v1/veramed-it', consultationRoutes)
 app.use('/api/v1/veramed-it', estimateRoutes)
 app.use('/api/v1/veramed-it', itContactRoutes)
+app.use('/api/v1/veramed-it', ticketRoutes)
 
 
 
